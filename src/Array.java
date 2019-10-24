@@ -42,12 +42,12 @@ public class Array<E> {
     //在第index个位置插入一个新元素e
     public void add(int index, E e){
 
-        if(size == data.length)
-            throw new IllegalArgumentException("Add failed. Array is full.");
-
         if(index < 0 || index > size){
             throw new IllegalArgumentException("Add failed. Require index >= 0 || index <= size.");
         }
+
+        if(size == data.length)
+            resize(2 * data.length);
 
         for(int i = size - 1; i >= index; i--){
             data[i+1] = data[i];
@@ -71,6 +71,11 @@ public class Array<E> {
         size--;//如果data[size]还存着一个对象的引用的话，就不会被Java的自动垃圾回收所回收
         data[size] = null;//这句话也不是必须的，如果存了其他值，那么原来的值也会被垃圾回收
         // 这种对象叫loitering objects，闲逛的游散的对象 != memory leak
+
+        if(size == data.length / 2){
+            resize(data.length / 2);
+        }
+
         return ret;
     }
 
@@ -143,5 +148,13 @@ public class Array<E> {
         res.append(']');
 
         return res.toString();
+    }
+
+    private void resize(int newCapacity){
+        E[] newData = (E[])new Object[newCapacity];
+        for (int i = 0; i < size; i++){
+            newData[i] = data[i];
+        }
+        data = newData;
     }
 }
